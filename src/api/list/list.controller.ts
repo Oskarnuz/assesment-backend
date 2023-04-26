@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { isAuthenticated } from '../../middlewares/auth'
+import { AuthUser } from "../../auth/auth.types";
 
-import { getAllLists, getListById, createList, updateList, deleteList } from "./list.services";
+import { 
+  getAllLists, 
+  getListById, 
+  createList, 
+  deleteList 
+} from "./list.services";
 
 
 export const getAllListsController = async (
@@ -10,8 +15,8 @@ export const getAllListsController = async (
   next: NextFunction
 ) => {
   try {
-    const list = await getAllLists()
-    res.status(200).json({ message: 'List Found', data: list })
+    const lists = await getAllLists()
+    res.status(200).json({ message: 'List Found', data: lists })
   } catch(error: any) {
     res.status(500).json({ message: 'Not is possible to show lists' })
   }
@@ -24,7 +29,7 @@ export const getListByIdController = async (
 ) => {
   try {
     const { id } = req.params
-    const list = await getListById(id)
+    const list = await getListById(Number(id))
 
     if(!list) {
       return res.status(404).json({ message: 'List not Found' })
@@ -36,34 +41,22 @@ export const getListByIdController = async (
 }
 
 export const createListController = async (
-  req: Request,
+  req: AuthUser,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const list = await createList(req.body)
-    res.status(201).json({ message: 'List Created', data: list })
-  } catch(error: any) {
-    res.status(500).json({ message: 'Not is possible to create a list' })
-  }
-}
+    const ownerId = req.user;
+    const { name } = req.body;
 
-export const updateListController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { id } = req.params
-    const list = await updateList(id, req.body)
-
-    if(!list) {
-      return res.status(404).json({ message: 'List not found' })
+    if (!ownerId) {
+      return res.status(400).json({ message: 'User id is missing' });
     }
 
-    res.status(201).json({ message: 'List updated', data: list })
+    const list = await createList(name, ownerId);
+    res.status(201).json({ message: 'List created', data: list });
   } catch(error: any) {
-    res.status(500).json({ message: 'Not is possible to update a list' })
+    res.status(500).json({ message: 'Not is possible to create a list' })
   }
 }
 
@@ -74,7 +67,8 @@ export const deleteListController = async (
 ) => {
   try {
     const { id } = req.params;
-    const list = await deleteList(id);
+
+    const list = await deleteList(Number(id));
     res.json(list);
   } catch(error: any) {
     res.status(500).json({ message: 'Not is possible to delete a list' })

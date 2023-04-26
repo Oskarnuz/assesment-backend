@@ -1,18 +1,18 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client"
 
 interface UserInput {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 interface ListInput {
-  name: string;
-  favorites: { connect: { id: string } }[];
+  name: string
+  favorites: { connect: { id: number } }[]
 }
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-export const getAllUsers = (): Promise<User[]> => {
+export const getAllUsers = () => {
   return prisma.user.findMany({
     select: {
       email: true,
@@ -23,43 +23,43 @@ export const getAllUsers = (): Promise<User[]> => {
         },
       },
     },
-  });
-};
+  })
+}
 
-export const createUser = async (input: UserInput): Promise<User> => {
-  const totalItems = await prisma.favorite.count();
-  const indexArr = [];
+export const createUser = async (input: any)  => {
+  const totalItems = await prisma.favorite.count()
+  const indexArr = []
 
-  for (let i = 0; i < (Math.floor(Math.random() * 4) + 3); i++) {
+  for (let i = 0; i < Math.floor(Math.random() * 4) + 3; i++) {
     indexArr.push(Math.floor(Math.random() * totalItems))
   }
-  
+
   const favorite_data = await prisma.favorite.findMany({
     where: {
       OR: Array.from(indexArr).map(index => ({ id: index })),
     },
-  });
-
-  const listInput: ListInput = {
-    name: "My favorites",
-    favorites: favorite_data.map(favorite => ({ id: favorite.id })),
-  };
+  })
 
   return prisma.user.create({
     data: {
       email: input.email,
       password: input.password,
       lists: {
-        create: listInput,
+        create: {
+          name: "My first list",
+          favorites: {
+            connect: favorite_data.map((favorite) => ({ id: favorite.id })),
+        },
       },
     },
+  },
   });
 };
 
-export const getUserById = (id: string): Promise<User | null> => {
+export const getUserById = (id: string) => {
   return prisma.user.findUnique({
     where: {
-      id,
+      id: id
     },
     select: {
       email: true,
@@ -71,5 +71,5 @@ export const getUserById = (id: string): Promise<User | null> => {
         },
       },
     },
-  });
-};
+  })
+}

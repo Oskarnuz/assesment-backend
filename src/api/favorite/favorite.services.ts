@@ -9,7 +9,7 @@ export const getAllFavorites = () => {
       title: true,
       description: true,
       link: true,
-      lists: {
+      List: {
         select: {
           id: true,
           name: true,
@@ -20,7 +20,7 @@ export const getAllFavorites = () => {
   })
 }
 
-export const getFavoriteById = (id: string) => {
+export const getFavoriteById = (id: number) => {
   return prisma.favorite.findUnique({
     where: {
       id: id
@@ -30,7 +30,7 @@ export const getFavoriteById = (id: string) => {
       title: true,
       description: true,
       link: true,
-      lists: {
+      List: {
         select: {
           id: true,
           name: true,
@@ -47,12 +47,12 @@ export const createFavorite = (input: any) => {
       title: input.title,
       description: input.description,
       link: input.link,
-      lists: input.lists
+      List: input.List
     }
   })
 }
 
-export const updateFavorite = (id: string, input: any) => {
+export const updateFavorite = (id: number, input: any) => {
   return prisma.favorite.update({
     where: {
       id: id
@@ -61,12 +61,12 @@ export const updateFavorite = (id: string, input: any) => {
       title: input.title,
       description: input.description,
       link: input.link,
-      lists: input.lists
+      List: input.Lists
     }
   })
 }
 
-export const deleteFavorite = (id: string) => {
+export const deleteFavorite = (id: number) => {
   return prisma.favorite.delete({
     where: {
       id: id

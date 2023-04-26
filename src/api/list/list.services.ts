@@ -7,137 +7,71 @@ export const getAllLists = () => {
     select: {
       id: true,
       name: true,
-      favorites: {
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          link: true,
-        },
-      },
+      favorites: true
     },
   });
 };
 
-export const getListById = (id: string) => {
+export const getListById = (id: number) => {
   return prisma.list.findUnique({
     where: {
       id: id,
     },
     select: {
-      id: true,
       name: true,
-      favorites: {
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          link: true,
-        },
+      favorites: true
       },
-      User: {
-        select: {
-          id: true,
-          email: true,
-        },
-      },
-    },
   });
 };
 
-export const createList = (input: any) => {
-  return prisma.list.create({
-    data: {
-      name: input.name,
-      favorites: {
-        createMany: {
-          data: input.favorites,
-        },
-      },
-      User: {
-        connect: {
-          id: input.userId,
-        },
-      },
-    },
-    select: {
-      id: true,
-      name: true,
-      favorites: {
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          link: true,
-        },
-      },
-      User: {
-        select: {
-          id: true,
-          email: true,
-        },
-      },
-    },
-  });
-};
+export const createList = async (name: string, ownerId: string) => {
+  
+  const totalItems = await prisma.favorite.count();
+  const indexArr = [];
 
-export const updateList = (id: string, input: any) => {
-  return prisma.list.update({
+  for (let i = 0; i < Math.floor(Math.random() * 4) + 3; i++) {
+    indexArr.push(Math.floor(Math.random() * totalItems));
+  }
+
+  const favorite_data = await prisma.favorite.findMany({
     where: {
-      id: id,
-    },
-    data: {
-      name: input.name,
-      favorites: {
-        deleteMany: {},
-        createMany: {
-          data: input.favorites,
-        },
-      },
-    },
-    select: {
-      id: true,
-      name: true,
-      favorites: {
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          link: true,
-        },
-      },
-      User: {
-        select: {
-          id: true,
-          email: true,
-        },
-      },
+      OR: Array.from(indexArr).map((index) => ({ id: index })),
     },
   });
+
+  const listOwner = await prisma.user.findUnique({
+    where: {
+      id: ownerId,
+    },
+  });
+
+  if (listOwner === null) {
+    return "Invalid User identification";
+  } else {
+    return prisma.list.create({
+      data: {
+        name,
+        owner:{
+          connect: {
+            id:ownerId,
+          }
+        },
+        favorites: {
+          connect: favorite_data.map((favorite) => ({ id: favorite.id })),
+        },
+      },
+    });
+  }
 };
 
-export const deleteList = (id: string) => {
+export const deleteList = (id: number) => {
   return prisma.list.delete({
     where: {
       id: id,
     },
     select: {
-      id: true,
       name: true,
-      favorites: {
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          link: true,
-        },
-      },
-      User: {
-        select: {
-          id: true,
-          email: true,
-        },
-      },
+      favorites: true
     },
   });
 };

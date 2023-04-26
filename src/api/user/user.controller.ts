@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-import { getAllUsers, getUserById, createUser } from "./user.services";
+import { getAllUsers, getUserById, createUser, updateUser, deleteUser } from "./user.services";
 import { AuthUser } from "../../auth/auth.types"
 
 export const getAllUsersController = async (

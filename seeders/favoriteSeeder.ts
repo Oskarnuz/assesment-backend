@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient()
 
-const seedFavorite = async (prisma: PrismaClient): Promise<void> => {
+const seedFavorite = async (prisma: PrismaClient) => {
   const favorite_arr = []
   for(let i = 0; i < 200; i++) {
     const favorite = {

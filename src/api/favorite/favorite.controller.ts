@@ -12,7 +12,7 @@ export const getAllFavoritesController = async (
     const favorite = await getAllFavorites()
     res.status(200).json({ message: 'Favorite Found', data: favorite })
   } catch(error: any) {
-    res.status(500).json({ message: 'Not is possible ti show favotites' })
+    res.status(500).json({ message: 'Not is possible to show favotites' })
   }
 }
 

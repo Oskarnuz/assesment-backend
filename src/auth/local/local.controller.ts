@@ -29,7 +29,6 @@ export const loginController = async(
   res: Response
 ) => {
   try {
-    console.log("aqui voy")
     const { email, password } = req.body
     
     const user = await login(email)
