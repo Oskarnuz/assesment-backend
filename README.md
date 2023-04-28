@@ -62,14 +62,13 @@ This project is a mission designed in order to evaluate the knowledge acquired d
 
 ### Prisma
 
-    ```bash
-    npx prisma init
-    Change environment variable in .env file
-    Review data from the .gitignore file
-    Create the models in prisma/schema.prisma
-    npx prisma migrate dev
-    npx prisma studio
-    ```
+- npx prisma init
+- Change environment variable in .env file
+- Review data from the .gitignore file
+- Create the models in prisma/schema.prisma
+- npx prisma migrate dev
+- npx prisma studio
+
 
 
 ### **Endpoints**
