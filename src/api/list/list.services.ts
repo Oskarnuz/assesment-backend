@@ -75,3 +75,71 @@ export const deleteList = (id: number) => {
     },
   });
 };
+
+// export const updateList = async (id: number, data: object) => {
+//   const list = await prisma.list.update({
+//     where: {
+//       id: id,
+//     },
+//     data: data,
+//     select: {
+//       name: true,
+//       favorites: true
+//     },
+//   });
+//   return list;
+// };
+
+export const updateList = async (id: number, newData: { name?: string; favorites?: { id: number }[] }) => {
+  const { name, favorites } = newData;
+  const listOwner = await prisma.list.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      owner: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  if (!listOwner) {
+    throw new Error('List not found');
+  }
+
+  if (name || favorites) {
+    const updatedData: any = {};
+
+    if (name) {
+      updatedData.name = name;
+    }
+
+    if (favorites) {
+      const favoriteIds = favorites.map((f) => f.id);
+      const existingFavorites = await prisma.favorite.findMany({
+        where: {
+          id: {
+            in: favoriteIds,
+          },
+        },
+      });
+
+      if (existingFavorites.length !== favoriteIds.length) {
+        throw new Error('Some favorites do not exist');
+      }
+
+      updatedData.favorites = {
+        set: favoriteIds.map((id) => ({ id })),
+      };
+    }
+
+    return prisma.list.update({
+      where: {
+        id,
+      },
+      data: updatedData,
+    });
+  }
+  }

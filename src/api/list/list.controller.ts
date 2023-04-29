@@ -5,7 +5,8 @@ import {
   getAllLists, 
   getListById, 
   createList, 
-  deleteList 
+  deleteList,
+  updateList 
 } from "./list.services";
 
 
@@ -74,3 +75,19 @@ export const deleteListController = async (
     res.status(500).json({ message: 'Not is possible to delete a list' })
   }
 }
+
+export const updateListController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { name, favorites } = req.body;
+
+    const updatedList = await updateList(Number(id), { name, favorites }); 
+    res.status(201).json({ message: 'List updated', data: favorites });
+  } catch (error: any) {
+    res.status(500).json({ message: 'Unable to update the list' });
+  }
+};

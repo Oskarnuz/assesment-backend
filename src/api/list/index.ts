@@ -4,7 +4,8 @@ import {
   getAllListsController, 
   getListByIdController, 
   createListController,  
-  deleteListController 
+  deleteListController,
+  updateListController 
 } from "./list.controller";
 import { isAuthenticated } from '../../middlewares/auth'
 
@@ -15,5 +16,6 @@ router.get("/", isAuthenticated, getAllListsController);
 router.get("/:id", isAuthenticated, getListByIdController);
 router.post("/", isAuthenticated, createListController);
 router.delete("/:id",isAuthenticated, deleteListController);
+router.put("/:id", isAuthenticated, updateListController);
 
 export default router
